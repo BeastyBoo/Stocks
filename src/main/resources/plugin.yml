@@ -1,0 +1,7 @@
+name: Stocks
+version: ${project.version}
+main: com.github.beastyboo.stocks.application.StocksPlugin
+depend: [Vault]
+authors: [BeastyBoo, BeastCraft3]
+description: A simple stock plugin which allow users to invest in the stock market with ingame money. 
+website: https://github.com/BeastyBoo
