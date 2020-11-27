@@ -1,11 +1,14 @@
 package com.github.beastyboo.stocks.adapter.repository;
 
 import com.github.beastyboo.stocks.adapter.type.StockHolderAdapter;
+import com.github.beastyboo.stocks.adapter.type.StockType;
 import com.github.beastyboo.stocks.application.Stocks;
+import com.github.beastyboo.stocks.domain.entity.StockEntity;
 import com.github.beastyboo.stocks.domain.entity.StockHolderEntity;
 import com.github.beastyboo.stocks.domain.port.StockHolderRepository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import yahoofinance.Stock;
 
 import java.io.File;
 import java.util.*;
@@ -62,9 +65,49 @@ public class InMemoryStockHolderRepository implements StockHolderRepository{
     }
 
     @Override
+    public boolean createStockHolder(UUID holder) {
+        Optional<StockHolderEntity> entity = this.getStockHolder(holder);
+
+        if(entity.isPresent()) {
+            return false;
+        }
+
+        StockHolderEntity newHolder = new StockHolderEntity.Builder(holder).build();
+        stockHolderMemory.put(holder, newHolder);
+
+        return true;
+    }
+
+    @Override
+    public boolean purchaseStock(UUID holder, UUID stockUUID, Stock stock, StockType type, double boughtPrice, int shareAmount) {
+
+        Optional<StockHolderEntity> entity = this.getStockHolder(holder);
+
+        if(!entity.isPresent()) {
+            this.createStockHolder(holder);
+        }
+        entity = this.getStockHolder(holder);
+
+        if(core.getStockConfig().getCreateStockEntity().createStockEntity(stockUUID, stock, type, boughtPrice, shareAmount) == false) {
+            return false;
+        } else {
+            Optional<StockEntity> stockEntity = core.getStockConfig().getStock().getStock(stockUUID);
+
+            if(!stockEntity.isPresent()) {
+                return false;
+            }
+
+            entity.get().getStocks().add(stockEntity.get());
+
+        }
+        return true;
+    }
+
+    @Override
     public Set<StockHolderEntity> getAllStockHolders() {
         return new HashSet<>(stockHolderMemory.values());
     }
+
 
     public Map<UUID, StockHolderEntity> getStockHolderMemory() {
         return stockHolderMemory;

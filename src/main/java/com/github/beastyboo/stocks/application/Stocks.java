@@ -16,6 +16,10 @@ import java.io.UncheckedIOException;
 
 /**
  * Created by Torbie on 25.11.2020.
+ *
+ * /stock buy <ticker symbol> <shares>
+ * /stock short <ticker symbol> <shares>
+ * /stock profile <name>
  */
 
 public class Stocks {
@@ -88,5 +92,9 @@ public class Stocks {
 
     public Economy getEconomy() {
         return economy;
+    }
+
+    public StockHolderConfig getStockHolderConfig() {
+        return stockHolderConfig;
     }
 }

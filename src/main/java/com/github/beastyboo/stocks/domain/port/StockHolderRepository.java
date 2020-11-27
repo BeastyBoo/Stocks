@@ -1,6 +1,8 @@
 package com.github.beastyboo.stocks.domain.port;
 
+import com.github.beastyboo.stocks.adapter.type.StockType;
 import com.github.beastyboo.stocks.domain.entity.StockHolderEntity;
+import yahoofinance.Stock;
 
 import java.util.Optional;
 import java.util.Set;
@@ -15,5 +17,7 @@ public interface StockHolderRepository {
     void close();
     Optional<StockHolderEntity> getStockHolder(UUID uuid);
     Set<StockHolderEntity> getAllStockHolders();
+    boolean createStockHolder(UUID holder);
+    boolean purchaseStock(UUID holder, UUID stockUUID, Stock stock, StockType type, double boughtPrice, int shareAmount);
 
 }

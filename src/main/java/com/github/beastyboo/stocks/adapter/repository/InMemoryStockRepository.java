@@ -1,11 +1,13 @@
 package com.github.beastyboo.stocks.adapter.repository;
 
 import com.github.beastyboo.stocks.adapter.type.StockAdapter;
+import com.github.beastyboo.stocks.adapter.type.StockType;
 import com.github.beastyboo.stocks.application.Stocks;
 import com.github.beastyboo.stocks.domain.entity.StockEntity;
 import com.github.beastyboo.stocks.domain.port.StockRepository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import yahoofinance.Stock;
 
 import java.io.File;
 import java.util.HashMap;
@@ -62,6 +64,20 @@ public class InMemoryStockRepository implements StockRepository{
     @Override
     public Optional<StockEntity> getStock(UUID uuid) {
         return Optional.ofNullable(stockMemory.get(uuid));
+    }
+
+    @Override
+    public boolean createStockEntity(UUID stockUUID, Stock stock, StockType type, double boughtPrice, int shareAmount) {
+        Optional<StockEntity> entity = this.getStock(stockUUID);
+
+        if(entity.isPresent()) {
+            return false;
+        }
+
+        StockEntity newEntity = new StockEntity.Builder(stockUUID, stock, type, boughtPrice).shareAmount(shareAmount).build();
+        stockMemory.put(stockUUID, newEntity);
+
+        return true;
     }
 
     private Gson createInstance() {
