@@ -69,6 +69,8 @@ public class CmdShort  implements SubCommand {
         if(core.getStockHolderConfig().getPurchaseStock().purchaseStock(p.getUniqueId(), UUID.randomUUID(), stock, StockType.SHORT, boughtPrice, i) == true) {
             econ.withdrawPlayer(p, boughtPrice);
             p.sendMessage("§cYou have successfully shorted stocks!");
+        }else {
+            p.sendMessage("§cCould not proceed with purchase");
         }
 
         return true;

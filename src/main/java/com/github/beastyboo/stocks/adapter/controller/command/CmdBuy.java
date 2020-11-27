@@ -68,7 +68,9 @@ public class CmdBuy implements SubCommand{
 
         if(core.getStockHolderConfig().getPurchaseStock().purchaseStock(p.getUniqueId(), UUID.randomUUID(), stock, StockType.STOCK, boughtPrice, i) == true) {
             econ.withdrawPlayer(p, boughtPrice);
-            p.sendMessage("§cYou have successfully shorted stocks!");
+            p.sendMessage("§cYou have successfully bought stocks!");
+        } else {
+            p.sendMessage("§cCould not proceed with purchase");
         }
         return true;
     }

@@ -5,6 +5,6 @@ package com.github.beastyboo.stocks.adapter.type;
  */
 public enum StockType {
 
-    STOCK, SHORT;
+    STOCK, SHORT
 
 }
