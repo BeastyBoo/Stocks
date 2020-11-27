@@ -1,7 +1,13 @@
 package com.github.beastyboo.stocks.application;
 
+import com.github.beastyboo.stocks.adapter.controller.command.CmdBuy;
+import com.github.beastyboo.stocks.adapter.controller.command.CmdProfile;
+import com.github.beastyboo.stocks.adapter.controller.command.CmdSell;
+import com.github.beastyboo.stocks.adapter.controller.command.CmdShort;
+import com.github.beastyboo.stocks.adapter.controller.listener.InventoryEvent;
 import com.github.beastyboo.stocks.config.StockConfig;
 import com.github.beastyboo.stocks.config.StockHolderConfig;
+import com.github.beastyboo.stocks.domain.entity.CommandEntity;
 import com.github.beastyboo.stocks.usecase.util.FileUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -27,6 +33,7 @@ public class Stocks {
     private final JavaPlugin plugin;
     private final StockConfig stockConfig;
     private final StockHolderConfig stockHolderConfig;
+    private final CommandEntity stockCommand;
     private final FileUtil fileUtil;
     private Economy economy;
 
@@ -34,6 +41,7 @@ public class Stocks {
         this.plugin = plugin;
         stockConfig = new StockConfig(this);
         stockHolderConfig = new StockHolderConfig(this);
+        stockCommand = new CommandEntity(this, "stocks");
         fileUtil = new FileUtil();
         this.economy = null;
     }
@@ -46,6 +54,10 @@ public class Stocks {
             plugin.getServer().getPluginManager().disablePlugin(plugin);
             return;
         }
+
+        plugin.getServer().getPluginManager().registerEvents(new InventoryEvent(this), plugin);
+        this.registerSubCommandWithPermission();
+
 
         stockConfig.load();
         stockHolderConfig.load();
@@ -76,6 +88,22 @@ public class Stocks {
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }
+    }
+
+    private void registerSubCommandWithPermission() {
+        CmdBuy cmdBuy = new CmdBuy(this);
+        CmdProfile cmdProfile = new CmdProfile(this);
+        CmdSell cmdSell = new CmdSell(this);
+        CmdShort cmdShort = new CmdShort(this);
+
+        stockCommand.getSubCommands().put(cmdBuy.name(), cmdBuy);
+        stockCommand.getSubCommands().put(cmdProfile.name(), cmdProfile);
+        stockCommand.getSubCommands().put(cmdSell.name(), cmdSell);
+        stockCommand.getSubCommands().put(cmdShort.name(), cmdShort);
+        stockCommand.registerPermission();
+        plugin.getCommand(stockCommand.getCommandName()).setTabCompleter(stockCommand);
+
+
     }
 
     public FileUtil getFileUtil() {

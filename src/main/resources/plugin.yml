@@ -5,3 +5,6 @@ depend: [Vault]
 authors: [BeastyBoo, BeastCraft3]
 description: A simple stock plugin which allow users to invest in the stock market with ingame money. 
 website: https://github.com/BeastyBoo
+commands:
+ stocks:
+  description: The common stock command used to either buy, short or sell stocks.
