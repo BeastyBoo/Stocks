@@ -10,21 +10,21 @@ import java.util.UUID;
  */
 public class StockEntity {
 
-    private final UUID stockOwner;
+    private final UUID uuid;
     private final Stock stock;
     private final StockType type;
     private final double boughtPrice;
     private final int shareAmount;
 
     public static class Builder {
-        private final UUID stockOwner;
+        private final UUID uuid;
         private final Stock stock;
         private final StockType type;
         private final double boughtPrice;
         private int shareAmount = 1;
 
-        public Builder(UUID stockOwner, Stock stock, StockType type, double boughtPrice) {
-            this.stockOwner = stockOwner;
+        public Builder(UUID uuid, Stock stock, StockType type, double boughtPrice) {
+            this.uuid = uuid;
             this.stock = stock;
             this.type = type;
             this.boughtPrice = boughtPrice;
@@ -42,15 +42,15 @@ public class StockEntity {
     }
 
     private StockEntity(Builder builder) {
-        stockOwner = builder.stockOwner;
+        uuid = builder.uuid;
         stock = builder.stock;
         type = builder.type;
         boughtPrice = builder.boughtPrice;
         shareAmount = builder.shareAmount;
     }
 
-    public UUID getStockOwner() {
-        return stockOwner;
+    public UUID getUUID() {
+        return uuid;
     }
 
     public Stock getStock() {
@@ -65,6 +65,10 @@ public class StockEntity {
         return shareAmount;
     }
 
+    public StockType getType() {
+        return type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -74,7 +78,7 @@ public class StockEntity {
 
         if (Double.compare(that.getBoughtPrice(), getBoughtPrice()) != 0) return false;
         if (getShareAmount() != that.getShareAmount()) return false;
-        if (!getStockOwner().equals(that.getStockOwner())) return false;
+        if (!getUUID().equals(that.getUUID())) return false;
         return getStock().equals(that.getStock());
     }
 
@@ -82,7 +86,7 @@ public class StockEntity {
     public int hashCode() {
         int result;
         long temp;
-        result = getStockOwner().hashCode();
+        result = getUUID().hashCode();
         result = 31 * result + getStock().hashCode();
         temp = Double.doubleToLongBits(getBoughtPrice());
         result = 31 * result + (int) (temp ^ (temp >>> 32));
@@ -93,7 +97,7 @@ public class StockEntity {
     @Override
     public String toString() {
         return "StockEntity{" +
-                "stockOwner=" + stockOwner.toString() +
+                "stockOwner=" + uuid.toString() +
                 ", stock=" + stock.getName() +
                 ", boughtPrice=" + String.valueOf(boughtPrice) +
                 ", shareAmount=" + String.valueOf(shareAmount) +

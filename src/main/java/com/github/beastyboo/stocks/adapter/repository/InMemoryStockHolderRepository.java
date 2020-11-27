@@ -22,19 +22,38 @@ public class InMemoryStockHolderRepository implements StockHolderRepository{
 
     public InMemoryStockHolderRepository(Stocks core) {
         this.core = core;
-        gson = this.getGson();
+        gson = this.createInstance();
         folder = new File(core.getPlugin().getDataFolder(), "stockholder");
         stockHolderMemory = new HashMap<>();
     }
 
     @Override
     public void load() {
+        if(!folder.exists()) {
+            folder.mkdirs();
+        }
+        File[] directoryListing = folder.listFiles();
+        if (directoryListing == null) {
+            return;
+        }
+        for (File child : directoryListing) {
+            String json = core.getFileUtil().loadContent(child);
+            StockHolderEntity entity = this.deserialize(json);
 
+            stockHolderMemory.put(entity.getHolder(), entity);
+        }
     }
 
     @Override
     public void close() {
-
+        for(StockHolderEntity entity : stockHolderMemory.values()) {
+            File file = new File(folder, entity.getHolder().toString() + ".json");
+            if(!folder.exists()) {
+                folder.mkdirs();
+            }
+            String json = this.serialize(entity);
+            core.getFileUtil().saveFile(file, json);
+        }
     }
 
     @Override
@@ -51,12 +70,20 @@ public class InMemoryStockHolderRepository implements StockHolderRepository{
         return stockHolderMemory;
     }
 
-    private Gson getGson() {
-        return new GsonBuilder().registerTypeAdapter(StockHolderEntity.class, new StockHolderAdapter())
+    private Gson createInstance() {
+        return new GsonBuilder().registerTypeAdapter(StockHolderEntity.class, new StockHolderAdapter(core))
                 .setPrettyPrinting()
                 .serializeNulls()
                 .disableHtmlEscaping()
                 .create();
+    }
+
+    private String serialize(StockHolderEntity entity) {
+        return this.gson.toJson(entity);
+    }
+
+    private StockHolderEntity deserialize(String json) {
+        return this.gson.fromJson(json, StockHolderEntity.class);
     }
 
 }

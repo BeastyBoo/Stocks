@@ -25,19 +25,38 @@ public class InMemoryStockRepository implements StockRepository{
 
     public InMemoryStockRepository(Stocks core) {
         this.core = core;
-        gson = this.getGson();
+        gson = this.createInstance();
         folder = new File(core.getPlugin().getDataFolder(), "stock");
         stockMemory = new HashMap<>();
     }
 
     @Override
     public void load() {
+        if(!folder.exists()) {
+            folder.mkdirs();
+        }
+        File[] directoryListing = folder.listFiles();
+        if (directoryListing == null) {
+            return;
+        }
+        for (File child : directoryListing) {
+            String json = core.getFileUtil().loadContent(child);
+            StockEntity entity = this.deserialize(json);
 
+            stockMemory.put(entity.getUUID(), entity);
+        }
     }
 
     @Override
     public void close() {
-
+        for(StockEntity entity : stockMemory.values()) {
+            File file = new File(folder, entity.getUUID().toString() + ".json");
+            if(!folder.exists()) {
+                folder.mkdirs();
+            }
+            String json = this.serialize(entity);
+            core.getFileUtil().saveFile(file, json);
+        }
     }
 
     @Override
@@ -45,12 +64,20 @@ public class InMemoryStockRepository implements StockRepository{
         return Optional.ofNullable(stockMemory.get(uuid));
     }
 
-    private Gson getGson() {
+    private Gson createInstance() {
         return new GsonBuilder().registerTypeAdapter(StockEntity.class, new StockAdapter())
                 .setPrettyPrinting()
                 .serializeNulls()
                 .disableHtmlEscaping()
                 .create();
+    }
+
+    private String serialize(StockEntity entity) {
+        return this.gson.toJson(entity);
+    }
+
+    private StockEntity deserialize(String json) {
+        return this.gson.fromJson(json, StockEntity.class);
     }
 
 }

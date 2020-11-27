@@ -1,6 +1,8 @@
 package com.github.beastyboo.stocks.application;
 
-import com.github.beastyboo.stocks.domain.entity.StockEntity;
+import com.github.beastyboo.stocks.config.StockConfig;
+import com.github.beastyboo.stocks.config.StockHolderConfig;
+import com.github.beastyboo.stocks.usecase.util.FileUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,10 +21,16 @@ import java.io.UncheckedIOException;
 public class Stocks {
 
     private final JavaPlugin plugin;
+    private final StockConfig stockConfig;
+    private final StockHolderConfig stockHolderConfig;
+    private final FileUtil fileUtil;
     private Economy economy;
 
     public Stocks(JavaPlugin plugin) {
         this.plugin = plugin;
+        stockConfig = new StockConfig(this);
+        stockHolderConfig = new StockHolderConfig(this);
+        fileUtil = new FileUtil();
         this.economy = null;
     }
 
@@ -34,15 +42,16 @@ public class Stocks {
             plugin.getServer().getPluginManager().disablePlugin(plugin);
             return;
         }
-        Stock stock = this.getStock("GOOG");
 
-        //StockEntity entity = new StockEntity.Builder(UUID.randomUUID(), stock, 500.0).shareAmount(3).build();
-
-
+        stockConfig.load();
+        stockHolderConfig.load();
     }
 
     public void close() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Closing down Stocks.");
+
+        stockHolderConfig.close();
+        stockConfig.close();
     }
 
     private boolean setupEconomy() {
@@ -65,8 +74,16 @@ public class Stocks {
         }
     }
 
+    public FileUtil getFileUtil() {
+        return fileUtil;
+    }
+
     public JavaPlugin getPlugin() {
         return plugin;
+    }
+
+    public StockConfig getStockConfig() {
+        return stockConfig;
     }
 
     public Economy getEconomy() {
