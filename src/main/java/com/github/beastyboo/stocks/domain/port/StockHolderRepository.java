@@ -2,6 +2,7 @@ package com.github.beastyboo.stocks.domain.port;
 
 import com.github.beastyboo.stocks.adapter.type.StockType;
 import com.github.beastyboo.stocks.domain.entity.StockHolderEntity;
+import org.bukkit.entity.Player;
 import yahoofinance.Stock;
 
 import java.util.Optional;
@@ -15,6 +16,7 @@ public interface StockHolderRepository {
 
     void load();
     void close();
+    void showProfile(Player target, Player player);
     Optional<StockHolderEntity> getStockHolder(UUID uuid);
     Set<StockHolderEntity> getAllStockHolders();
     boolean createStockHolder(UUID holder);

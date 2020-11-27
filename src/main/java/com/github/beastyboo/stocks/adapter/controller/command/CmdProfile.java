@@ -2,6 +2,8 @@ package com.github.beastyboo.stocks.adapter.controller.command;
 
 import com.github.beastyboo.stocks.application.Stocks;
 import com.github.beastyboo.stocks.domain.port.SubCommand;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 /**
@@ -17,22 +19,38 @@ public class CmdProfile  implements SubCommand {
 
     @Override
     public boolean onCommand(Player player, String[] args) {
-        return false;
+
+        if(args.length == 0) {
+
+            core.getStockHolderConfig().showProfile(player, player);
+
+        } else {
+
+            Player target = Bukkit.getPlayer(args[0]);
+
+            if(target == null) {
+                player.sendMessage(ChatColor.RED + args[0] + " was not found...");
+            }
+
+            core.getStockHolderConfig().showProfile(target, player);
+
+        }
+        return true;
     }
 
     @Override
     public String name() {
-        return null;
+        return "profile";
     }
 
     @Override
     public String info() {
-        return null;
+        return "/profile <target>";
     }
 
     @Override
     public String permission() {
-        return null;
+        return "stocks.profile";
     }
 
     @Override

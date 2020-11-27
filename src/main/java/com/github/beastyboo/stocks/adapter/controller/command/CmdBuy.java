@@ -75,17 +75,17 @@ public class CmdBuy implements SubCommand{
 
     @Override
     public String name() {
-        return "short";
+        return "buy";
     }
 
     @Override
     public String info() {
-        return "/stock short <ticker/symbol> <shares/amount>";
+        return "/stock buy <ticker/symbol> <shares/amount>";
     }
 
     @Override
     public String permission() {
-        return "stocks.short";
+        return "stocks.buy";
     }
 
     @Override

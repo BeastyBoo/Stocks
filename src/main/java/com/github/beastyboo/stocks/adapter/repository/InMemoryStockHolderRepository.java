@@ -8,6 +8,13 @@ import com.github.beastyboo.stocks.domain.entity.StockHolderEntity;
 import com.github.beastyboo.stocks.domain.port.StockHolderRepository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import yahoofinance.Stock;
 
 import java.io.File;
@@ -57,6 +64,65 @@ public class InMemoryStockHolderRepository implements StockHolderRepository{
             String json = this.serialize(entity);
             core.getFileUtil().saveFile(file, json);
         }
+    }
+
+    @Override
+    public void showProfile(Player target, Player player) {
+        UUID uuid = target.getUniqueId();
+        Optional<StockHolderEntity> stockHolder = this.getStockHolder(uuid);
+        if(!stockHolder.isPresent()) {
+            player.sendMessage("§cCould not find profile");
+            return;
+        }
+
+        Inventory inventory = Bukkit.createInventory(null, 54, "§cStock Profile");
+
+        for(StockEntity stockEntity : stockHolder.get().getStocks()) {
+
+            double currentWorth = stockEntity.getStock().getQuote().getPrice().doubleValue() * stockEntity.getShareAmount();
+
+            List<String> lore = new ArrayList<>();
+
+            lore.add("Ticker/Symbol: " + stockEntity.getStock().getSymbol());
+            lore.add("Type: " + stockEntity.getType().toString());
+            lore.add("Bought Price: " + String.valueOf(stockEntity.getBoughtPrice()));
+            lore.add("Share(s) Worth: " + String.valueOf(currentWorth));
+
+            if(stockEntity.getType() == StockType.SHORT) {
+                if(currentWorth >= stockEntity.getBoughtPrice()) {
+
+                    inventory.addItem(createItem(Material.RED_CONCRETE, stockEntity.getStock().getName(), lore, stockEntity.getShareAmount()));
+
+                } else {
+                    inventory.addItem(createItem(Material.GREEN_CONCRETE, stockEntity.getStock().getName(), lore, stockEntity.getShareAmount()));
+                }
+
+            } else {
+
+                if(currentWorth <= stockEntity.getBoughtPrice()) {
+
+                    inventory.addItem(createItem(Material.RED_CONCRETE, stockEntity.getStock().getName(), lore, stockEntity.getShareAmount()));
+
+                } else {
+                    inventory.addItem(createItem(Material.GREEN_CONCRETE, stockEntity.getStock().getName(), lore, stockEntity.getShareAmount()));
+                }
+            }
+        }
+
+        List<String> lore = new ArrayList<>();
+        lore.add("Status: " + String.valueOf(stockHolder.get().getTotalEarnings()));
+
+        ItemStack playerhead = new ItemStack(Material.PLAYER_HEAD, 1, (short) 3);
+        SkullMeta playerheadmeta = (SkullMeta) playerhead.getItemMeta();
+        playerheadmeta.setOwningPlayer(target);
+        playerheadmeta.setDisplayName(target.getName());
+        playerheadmeta.setLore(lore);
+        playerhead.setItemMeta(playerheadmeta);
+
+        inventory.setItem(53, playerhead);
+
+
+        player.openInventory(inventory);
     }
 
     @Override
@@ -127,6 +193,19 @@ public class InMemoryStockHolderRepository implements StockHolderRepository{
 
     private StockHolderEntity deserialize(String json) {
         return this.gson.fromJson(json, StockHolderEntity.class);
+    }
+
+    private ItemStack createItem(Material material, String name, List<String> lore, int shares) {
+        if(material == null || name == null || lore == null || shares < 1) {
+            return null;
+        }
+
+        ItemStack item = new ItemStack(material, shares);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(name);
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        return item;
     }
 
 }

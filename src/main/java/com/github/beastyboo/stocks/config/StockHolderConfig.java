@@ -6,6 +6,7 @@ import com.github.beastyboo.stocks.domain.port.StockHolderRepository;
 import com.github.beastyboo.stocks.usecase.CreateStockHolder;
 import com.github.beastyboo.stocks.usecase.FindStockHolder;
 import com.github.beastyboo.stocks.usecase.PurchaseStock;
+import org.bukkit.entity.Player;
 
 /**
  * Created by Torbie on 25.11.2020.
@@ -36,6 +37,10 @@ public class StockHolderConfig {
 
     public PurchaseStock getPurchaseStock() {
         return purchaseStock;
+    }
+
+    public void showProfile(Player target, Player player) {
+        repository.showProfile(target, player);
     }
 
     public void load() {
