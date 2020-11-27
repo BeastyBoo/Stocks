@@ -1,6 +1,7 @@
 package com.github.beastyboo.stocks.adapter.repository;
 
 import com.github.beastyboo.stocks.adapter.type.StockHolderAdapter;
+import com.github.beastyboo.stocks.adapter.type.StockInventory;
 import com.github.beastyboo.stocks.adapter.type.StockType;
 import com.github.beastyboo.stocks.application.Stocks;
 import com.github.beastyboo.stocks.domain.entity.StockEntity;
@@ -66,6 +67,45 @@ public class InMemoryStockHolderRepository implements StockHolderRepository{
         }
     }
 
+    private void defaultInv(Inventory inventory, StockHolderEntity entity, Map<Integer, StockEntity> stocks) {
+
+        int i = 0;
+        for(StockEntity stock : entity.getStocks()) {
+
+            double currentWorth = stock.getStock().getQuote().getPrice().doubleValue() * stock.getShareAmount();
+
+            List<String> lore = new ArrayList<>();
+
+            lore.add("Ticker/Symbol: " + stock.getStock().getSymbol());
+            lore.add("Type: " + stock.getType().toString());
+            lore.add("Bought Price: " + String.valueOf(stock.getBoughtPrice()));
+            lore.add("Share(s) Worth: " + String.valueOf(currentWorth));
+
+            if(stock.getType() == StockType.SHORT) {
+                if(currentWorth >= stock.getBoughtPrice()) {
+
+                    inventory.setItem(i, createItem(Material.RED_CONCRETE, stock.getStock().getName(), lore, stock.getShareAmount()));
+
+                } else {
+                    inventory.setItem(i, createItem(Material.GREEN_CONCRETE, stock.getStock().getName(), lore, stock.getShareAmount()));
+                }
+
+            } else {
+
+                if(currentWorth <= stock.getBoughtPrice()) {
+
+                    inventory.setItem(i, createItem(Material.RED_CONCRETE, stock.getStock().getName(), lore, stock.getShareAmount()));
+
+                } else {
+                    inventory.setItem(i, createItem(Material.GREEN_CONCRETE, stock.getStock().getName(), lore, stock.getShareAmount()));
+                }
+            }
+            stocks.put(i, stock);
+
+            i++;
+        }
+    }
+
     @Override
     public void showProfile(Player target, Player player) {
         UUID uuid = target.getUniqueId();
@@ -74,40 +114,13 @@ public class InMemoryStockHolderRepository implements StockHolderRepository{
             player.sendMessage("§cCould not find profile");
             return;
         }
+        Map<Integer, StockEntity> stocks = new HashMap<>();
 
-        Inventory inventory = Bukkit.createInventory(null, 54, "§cStock Profile");
+        Inventory inventory = Bukkit.createInventory(new StockInventory(stockHolder.get(), stocks), 54, "§cStock Profile");
 
-        for(StockEntity stockEntity : stockHolder.get().getStocks()) {
+        final StockInventory inv = (StockInventory) inventory.getHolder();
 
-            double currentWorth = stockEntity.getStock().getQuote().getPrice().doubleValue() * stockEntity.getShareAmount();
-
-            List<String> lore = new ArrayList<>();
-
-            lore.add("Ticker/Symbol: " + stockEntity.getStock().getSymbol());
-            lore.add("Type: " + stockEntity.getType().toString());
-            lore.add("Bought Price: " + String.valueOf(stockEntity.getBoughtPrice()));
-            lore.add("Share(s) Worth: " + String.valueOf(currentWorth));
-
-            if(stockEntity.getType() == StockType.SHORT) {
-                if(currentWorth >= stockEntity.getBoughtPrice()) {
-
-                    inventory.addItem(createItem(Material.RED_CONCRETE, stockEntity.getStock().getName(), lore, stockEntity.getShareAmount()));
-
-                } else {
-                    inventory.addItem(createItem(Material.GREEN_CONCRETE, stockEntity.getStock().getName(), lore, stockEntity.getShareAmount()));
-                }
-
-            } else {
-
-                if(currentWorth <= stockEntity.getBoughtPrice()) {
-
-                    inventory.addItem(createItem(Material.RED_CONCRETE, stockEntity.getStock().getName(), lore, stockEntity.getShareAmount()));
-
-                } else {
-                    inventory.addItem(createItem(Material.GREEN_CONCRETE, stockEntity.getStock().getName(), lore, stockEntity.getShareAmount()));
-                }
-            }
-        }
+        this.defaultInv(inventory, stockHolder.get(), inv.getStocksBySlot());
 
         List<String> lore = new ArrayList<>();
         lore.add("Status: " + String.valueOf(stockHolder.get().getTotalEarnings()));
@@ -119,8 +132,7 @@ public class InMemoryStockHolderRepository implements StockHolderRepository{
         playerheadmeta.setLore(lore);
         playerhead.setItemMeta(playerheadmeta);
 
-        inventory.setItem(53, playerhead);
-
+        inventory.setItem(45, playerhead);
 
         player.openInventory(inventory);
     }

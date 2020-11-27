@@ -22,4 +22,5 @@ public interface StockHolderRepository {
     boolean createStockHolder(UUID holder);
     boolean purchaseStock(UUID holder, UUID stockUUID, Stock stock, StockType type, double boughtPrice, int shareAmount);
 
+
 }
