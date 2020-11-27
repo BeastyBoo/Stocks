@@ -1,5 +1,6 @@
 package com.github.beastyboo.stocks.domain.entity;
 
+import com.github.beastyboo.stocks.adapter.type.StockType;
 import yahoofinance.Stock;
 
 import java.util.UUID;
@@ -11,18 +12,21 @@ public class StockEntity {
 
     private final UUID stockOwner;
     private final Stock stock;
+    private final StockType type;
     private final double boughtPrice;
     private final int shareAmount;
 
     public static class Builder {
         private final UUID stockOwner;
         private final Stock stock;
+        private final StockType type;
         private final double boughtPrice;
         private int shareAmount = 1;
 
-        public Builder(UUID stockOwner, Stock stock, double boughtPrice) {
+        public Builder(UUID stockOwner, Stock stock, StockType type, double boughtPrice) {
             this.stockOwner = stockOwner;
             this.stock = stock;
+            this.type = type;
             this.boughtPrice = boughtPrice;
         }
 
@@ -40,6 +44,7 @@ public class StockEntity {
     private StockEntity(Builder builder) {
         stockOwner = builder.stockOwner;
         stock = builder.stock;
+        type = builder.type;
         boughtPrice = builder.boughtPrice;
         shareAmount = builder.shareAmount;
     }
