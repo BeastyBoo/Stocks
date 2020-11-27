@@ -22,10 +22,6 @@ import java.io.UncheckedIOException;
 
 /**
  * Created by Torbie on 25.11.2020.
- *
- * /stock buy <ticker symbol> <shares>
- * /stock short <ticker symbol> <shares>
- * /stock profile <name>
  */
 
 public class Stocks {
@@ -102,7 +98,6 @@ public class Stocks {
         stockCommand.getSubCommands().put(cmdShort.name(), cmdShort);
         stockCommand.registerPermission();
         plugin.getCommand(stockCommand.getCommandName()).setTabCompleter(stockCommand);
-
 
     }
 
