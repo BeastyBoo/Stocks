@@ -2,6 +2,7 @@ package com.github.beastyboo.stocks.config;
 
 import com.github.beastyboo.stocks.adapter.repository.InMemoryStockRepository;
 import com.github.beastyboo.stocks.application.Stocks;
+import com.github.beastyboo.stocks.domain.entity.StockEntity;
 import com.github.beastyboo.stocks.domain.port.StockRepository;
 import com.github.beastyboo.stocks.usecase.CreateStockEntity;
 import com.github.beastyboo.stocks.usecase.FindStock;
@@ -25,6 +26,10 @@ public class StockConfig {
 
     public FindStock getStock() {
         return stock;
+    }
+
+    public void deleteStock(StockEntity stockEntity) {
+        repository.deleteStock(stockEntity);
     }
 
     public CreateStockEntity getCreateStockEntity() {

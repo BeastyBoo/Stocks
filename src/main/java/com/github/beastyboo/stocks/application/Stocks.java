@@ -37,7 +37,7 @@ public class Stocks {
         this.plugin = plugin;
         stockConfig = new StockConfig(this);
         stockHolderConfig = new StockHolderConfig(this);
-        stockCommand = new CommandEntity(this, "stocks");
+        stockCommand = new CommandEntity(this, "stock");
         fileUtil = new FileUtil();
         this.economy = null;
     }

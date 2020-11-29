@@ -14,6 +14,7 @@ public interface StockRepository {
 
     void load();
     void close();
+    void deleteStock(StockEntity stockEntity);
     Optional<StockEntity> getStock(UUID uuid);
     boolean createStockEntity(UUID stockUUID, Stock stock, StockType type, double boughtPrice, int shareAmount);
 

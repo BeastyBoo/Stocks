@@ -7,6 +7,7 @@ import org.bukkit.inventory.InventoryHolder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Torbie on 27.11.2020.
@@ -15,10 +16,12 @@ public class StockInventory implements InventoryHolder{
 
     private final StockHolderEntity stockHolderEntity;
     private final Map<Integer, StockEntity> stocksBySlot;
+    private final UUID target;
 
-    public StockInventory(StockHolderEntity stockHolderEntity, Map<Integer, StockEntity> stocksBySlot) {
+    public StockInventory(StockHolderEntity stockHolderEntity, Map<Integer, StockEntity> stocksBySlot, UUID target) {
         this.stockHolderEntity = stockHolderEntity;
         this.stocksBySlot = stocksBySlot;
+        this.target = target;
     }
 
     public StockHolderEntity getStockHolderEntity() {
@@ -27,6 +30,10 @@ public class StockInventory implements InventoryHolder{
 
     public Map<Integer, StockEntity> getStocksBySlot() {
         return stocksBySlot;
+    }
+
+    public UUID getTarget() {
+        return target;
     }
 
     @Override

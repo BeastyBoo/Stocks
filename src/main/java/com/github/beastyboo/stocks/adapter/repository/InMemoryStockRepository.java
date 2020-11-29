@@ -62,6 +62,15 @@ public class InMemoryStockRepository implements StockRepository{
     }
 
     @Override
+    public void deleteStock(StockEntity stockEntity) {
+        stockMemory.remove(stockEntity.getUUID(), stockEntity);
+        File sourceFile = new File(folder, stockEntity.getUUID().toString() + ".json");
+        if(sourceFile.exists()) {
+            sourceFile.delete();
+        }
+    }
+
+    @Override
     public Optional<StockEntity> getStock(UUID uuid) {
         return Optional.ofNullable(stockMemory.get(uuid));
     }

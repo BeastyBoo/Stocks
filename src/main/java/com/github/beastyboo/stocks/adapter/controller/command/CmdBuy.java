@@ -46,6 +46,11 @@ public class CmdBuy implements SubCommand{
             return true;
         }
 
+        if(stock == null) {
+            p.sendMessage("§cCould not find the stock: " + args[0].toUpperCase());
+            return true;
+        }
+
         int i;
 
         /**
@@ -55,6 +60,11 @@ public class CmdBuy implements SubCommand{
         try {
             i = Integer.parseInt(args[1]);
         } catch (NumberFormatException ex) {
+            p.sendMessage(ChatColor.RED + args[1] + " Is not a valid number.");
+            return true;
+        }
+
+        if(i < 1) {
             p.sendMessage(ChatColor.RED + args[1] + " Is not a valid number.");
             return true;
         }

@@ -30,6 +30,7 @@ public class CmdProfile  implements SubCommand {
 
             if(target == null) {
                 player.sendMessage(ChatColor.RED + args[0] + " was not found...");
+                return true;
             }
 
             core.getStockHolderConfig().showProfile(target, player);

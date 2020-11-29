@@ -116,7 +116,7 @@ public class InMemoryStockHolderRepository implements StockHolderRepository{
         }
         Map<Integer, StockEntity> stocks = new HashMap<>();
 
-        Inventory inventory = Bukkit.createInventory(new StockInventory(stockHolder.get(), stocks), 54, "§cStock Profile");
+        Inventory inventory = Bukkit.createInventory(new StockInventory(stockHolder.get(), stocks, uuid), 54, "§cStock Profile");
 
         final StockInventory inv = (StockInventory) inventory.getHolder();
 

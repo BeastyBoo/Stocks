@@ -55,6 +55,9 @@ public class InventoryEvent implements Listener{
                 if(e.getClick() == ClickType.LEFT) {
                     break;
                 }
+                if(!inv.getTarget().equals(p.getUniqueId())) {
+                    break;
+                }
                 e.getInventory().removeItem(item);
                 this.saleStock(p, entity, stock);
                 p.updateInventory();
@@ -64,6 +67,9 @@ public class InventoryEvent implements Listener{
                     break;
                 }
                 if(e.getClick() == ClickType.LEFT) {
+                    break;
+                }
+                if(!inv.getTarget().equals(p.getUniqueId())) {
                     break;
                 }
                 e.getInventory().removeItem(item);
@@ -76,10 +82,6 @@ public class InventoryEvent implements Listener{
 
     }
 
-    /**
-     * 1. Example: currentWorth = 350, boughtPrice = 700, offset = 350.
-     */
-
     private void saleStock(Player p, StockHolderEntity entity, StockEntity stock) {
         double currentWorth = stock.getStock().getQuote().getPrice().doubleValue() * stock.getShareAmount();
         double boughtPrice = stock.getBoughtPrice();
@@ -90,5 +92,6 @@ public class InventoryEvent implements Listener{
             core.getEconomy().depositPlayer(p, currentWorth);
         }
         entity.getStocks().remove(stock);
+        core.getStockConfig().deleteStock(stock);
     }
 }
